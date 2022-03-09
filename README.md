@@ -12,4 +12,3 @@ https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata
 -       Left Eye Points = 42–47
 -       Mouth Points = 48–60
 -       Lips Points = 61–67
-
