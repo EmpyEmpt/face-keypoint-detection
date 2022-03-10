@@ -1,150 +1,107 @@
-from face_finder import crop_face
 import tensorflow as tf
-import numpy as np
-import config as cfg
-import csv
-import pandas as pd
-from PIL import Image
-import cv2
+from tensorflow_examples.models.pix2pix import pix2pix
+from IPython.display import clear_output
+import matplotlib.pyplot as plt
 
+TRAIN_LENGTH = 1
+BATCH_SIZE = 64
+BUFFER_SIZE = 1000
+STEPS_PER_EPOCH = TRAIN_LENGTH // BATCH_SIZE
 
-class point():
-    realX: int
-    realY: int
-    relativeX: float
-    relativeY: float
+train_images = dataset['train'].map(load_image, num_parallel_calls=tf.data.AUTOTUNE)
+test_images = dataset['test'].map(load_image, num_parallel_calls=tf.data.AUTOTUNE)
 
-    def __init__(self, x: int, y: int):
-        self.realX = x
-        self.realY = y
+def display(display_list):
+  plt.figure(figsize=(15, 15))
 
-    def __init__(self, x: float, y: float):
-        self.relativeX = x
-        self.relativeY = y
+  title = ['Input Image', 'True Mask', 'Predicted Mask']
 
-    def to_relative(self, w, h):
-        self.relativeX = self.x / w
-        self.relativeY = self.y / h
+  for i in range(len(display_list)):
+    plt.subplot(1, len(display_list), i+1)
+    plt.title(title[i])
+    plt.imshow(tf.keras.utils.array_to_img(display_list[i]))
+    plt.axis('off')
+  plt.show()
 
-    def from_relative(self, w, h):
-        self.relativeX = self.x * w
-        self.relativeY = self.y * h
+base_model = tf.keras.applications.MobileNetV2(input_shape=[128, 128, 3], include_top=False)
 
-    def get_real(self):
-        return [self.realX, self.realY]
+# Use the activations of these layers
+layer_names = [
+    'block_1_expand_relu',   # 64x64
+    'block_3_expand_relu',   # 32x32
+    'block_6_expand_relu',   # 16x16
+    'block_13_expand_relu',  # 8x8
+    'block_16_project',      # 4x4
+]
+base_model_outputs = [base_model.get_layer(name).output for name in layer_names]
 
-    def get_relative(self):
-        return [self.relativeX, self.relativeY]
+# Create the feature extraction model
+down_stack = tf.keras.Model(inputs=base_model.input, outputs=base_model_outputs)
 
+down_stack.trainable = False
 
-class image:
-    filename: str
-    width_height: int
-    TL: list
-    BR: list
-    points: list
+up_stack = [
+    pix2pix.upsample(512, 3),  # 4x4 -> 8x8
+    pix2pix.upsample(256, 3),  # 8x8 -> 16x16
+    pix2pix.upsample(128, 3),  # 16x16 -> 32x32
+    pix2pix.upsample(64, 3),   # 32x32 -> 64x64
+]
 
-    def __init__(self, fn, tlx, tly, brx, bry, points):
-        # print(f'fucking {fn}')
-        self.filename = fn
-        self.TL = [tlx, tly]
-        self.BR = [brx, bry]
-        self.points = points
-        self.width_height = self.BR[0] - self.TL[0]
+def unet_model(output_channels:int):
+  inputs = tf.keras.layers.Input(shape=[128, 128, 3])
 
-    def to_list(self):
-        return [self.filename, self.TL, self.width_height, self.points]
+  # Downsampling through the model
+  skips = down_stack(inputs)
+  x = skips[-1]
+  skips = reversed(skips[:-1])
 
-    def prep_points(self, lst):
-        pass
+  # Upsampling and establishing the skip connections
+  for up, skip in zip(up_stack, skips):
+    x = up(x)
+    concat = tf.keras.layers.Concatenate()
+    x = concat([x, skip])
 
-    def read_all(path):
-        file = open(path)
-        csvreader = csv.reader(file)
-        all = []
-        i = 0
-        for row in csvreader:
-            if i == 0:
-                i += 1
-                continue
-            all.append(image(row[0], int(row[1]), int(
-                row[2]), int(row[3]), int(row[5]), row[5:]).to_list())
-        file.close()
-        return all
+  # This is the last layer of the model
+  last = tf.keras.layers.Conv2DTranspose(
+      filters=output_channels, kernel_size=3, strides=2,
+      padding='same')  #64x64 -> 128x128
 
+  x = last(x)
 
-# def normalize(input_image):
-#     # TODO: input datapoint (csv)
-#     input_image = tf.cast(input_image, tf.float32) / 255.0
-#     return input_image
+  return tf.keras.Model(inputs=inputs, outputs=x)
 
+OUTPUT_CLASSES = 3
 
-# def load_image(datapoint):
-#     # TODO: input datapoint (csv)
-#     input_image = tf.image.resize(datapoint['image'], (128, 128))
-#     input_image = normalize(input_image)
-#     return input_image
+model = unet_model(output_channels=OUTPUT_CLASSES)
+model.compile(optimizer='adam',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
 
+class DisplayCallback(tf.keras.callbacks.Callback):
+  def on_epoch_end(self, epoch, logs=None):
+    clear_output(wait=True)
+    show_predictions()
+    print ('\nSample Prediction after epoch {}\n'.format(epoch+1))
 
-def split_dataset(dataset, test_ratio=0.20):
-    """Splits a panda dataframe in two."""
-    test_indices = np.random.rand(len(dataset)) < test_ratio
-    return dataset[~test_indices], dataset[test_indices]
+EPOCHS = 20
+VAL_SUBSPLITS = 5
+VALIDATION_STEPS = info.splits['test'].num_examples//BATCH_SIZE//VAL_SUBSPLITS
 
+model_history = model.fit(train_batches, epochs=EPOCHS,
+                          steps_per_epoch=STEPS_PER_EPOCH,
+                          validation_steps=VALIDATION_STEPS,
+                          validation_data=test_batches,
+                          callbacks=[DisplayCallback()])
 
-def prep_image(dp):
-    image = dp[0]
-    bb = dp[1]
-    wh = dp[2]
-    points = dp[3]
-    print('INITIAL DATA: ')
-    print(image, wh, points)
-    # crop out face from image
-    imagepath = cv2.imread(cfg.IMAGES_PATH + image)
-    _, path = crop_face(imagepath,
-                        int(bb[0]), int(bb[1]), int(wh), int(wh))
-    # resize image to xxx * xxx
-    image = Image.open(path)
-    image = image.resize((194, 194))
-    image.save(path)
+oss = model_history.history['loss']
+val_loss = model_history.history['val_loss']
 
-    # save resize ration (somehow)
-    crop_r = cfg.CROP_SIZE / wh
-
-    # resize points using resize ratio
-    for point in points:
-        point = float(point)
-        point = point * crop_r
-    # convert points to relative [0.0 -> 1]
-    npo = []
-    for point in points:
-        point = float(point) / wh
-        npo.append(point)
-    print('AFTER PROCESSING: ')
-    print(path, wh, npo)
-    print('AND: ')
-    print()
-    return image, npo
-
-    # idk, save it?
-
-
-def main():
-    # TRAIN_LENGTH = 1  # tmp
-    # BATCH_SIZE = 64
-    # BUFFER_SIZE = 1000
-    # STEPS_PER_EPOCH = TRAIN_LENGTH
-    # # train_images = dataset['train'].map(
-    # #     load_image, num_parallel_calls=tf.data.AUTOTUNE)
-    # # test_images = dataset['test'].map(
-    # #     load_image, num_parallel_calls=tf.data.AUTOTUNE)
-    input_shape = (128, 128, 3)
-    output_shape = (1, 68*2)
-    ds = image.read_all(cfg.LABELS_PATH)
-    ds = pd.DataFrame(ds)
-    train_ds_pd, test_ds_pd = split_dataset(ds)
-    ay, npo = prep_image(train_ds_pd.iloc[1])
-
-
-if __name__ == '__main__':
-    main()
+plt.figure()
+plt.plot(model_history.epoch, loss, 'r', label='Training loss')
+plt.plot(model_history.epoch, val_loss, 'bo', label='Validation loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss Value')
+plt.ylim([0, 1])
+plt.legend()
+plt.show()
