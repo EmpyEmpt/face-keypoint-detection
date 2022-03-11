@@ -1,5 +1,8 @@
 *.pyc
 __pycache__
 test.ipynb
-smallervggnet.py
 data/data/croped
+data/data/tmp
+smallervggnet.py
+model_pix2pix.py
+model_vgg.py

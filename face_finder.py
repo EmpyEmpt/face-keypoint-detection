@@ -3,8 +3,8 @@ import cv2
 
 def crop_face(image, x, y, w, h):
     roi_color = image[y:y + h, x:x + w]
-    cv2.imwrite('data\data\croped\\' + str(w) +
-                str(h) + '_faces.jpg', roi_color)
+    # cv2.imwrite('data\data\croped\\' + str(w) +
+    #             str(h) + '_faces.jpg', roi_color)
     return roi_color, 'data\data\croped\\' + str(w) + str(h) + '_faces.jpg'
 
 

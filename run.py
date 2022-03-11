@@ -65,8 +65,6 @@ def prep_image(dp):
     bb = dp[1]
     wh = dp[2]
     points = dp[3]
-    # print('INITIAL DATA: ')
-    # print(image, wh, points)
 
     # crop out face from image
     imagepath = cv2.imread(cfg.IMAGES_PATH + image)
@@ -88,14 +86,13 @@ def prep_image(dp):
 
     # convert points to relative [0.0 -> 1]
     npo = []
-    for i in range(0, 135, 2):
-        point1 = float(points[i]) / wh
-        point2 = float(points[i+1]) / wh
-        npo.append([point1, point2])
-    # print('AFTER PROCESSING: ')
-    # print(path, wh, npo)
-    # print('AND: ')
-    # print()
+    # for i in range(0, 135, 2):
+    #     point1 = float(points[i]) / wh
+    #     point2 = float(points[i+1]) / wh
+    #     npo.append([point1, point2])
+    for point in points:
+        point_ = float(point) / wh
+        npo.append(point_)
 
     # (should I really convert it to tensor?)
     npo = tf.convert_to_tensor(npo, dtype=tf.float32)
@@ -106,7 +103,7 @@ def prep_image(dp):
 
 def main():
     input_shape = (194, 194, 3)
-    output_shape = (68, 2)
+    output_shape = (136, )
     ds = image.read_all(cfg.LABELS_PATH)
     ds = pd.DataFrame(ds)
     train_ds, test_ds = split_dataset(ds)
@@ -129,7 +126,6 @@ def main():
 
         # VERY TEMPOPARY BREAK
         break
-    print(train_ds)
 
     # for i in range(test_ds.shape[0]):
     for i in range(2):
