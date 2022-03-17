@@ -6,3 +6,7 @@ data/data/tmp
 smallervggnet.py
 model_pix2pix.py
 model_vgg.py
+training_*/
+saved_model/
+my_model.h5
+pic.jpg
