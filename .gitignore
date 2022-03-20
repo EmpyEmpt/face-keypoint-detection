@@ -9,4 +9,6 @@ model_vgg.py
 training_*/
 saved_model/
 my_model.h5
+best_model_so_far194.h5
+x128-92.72%.h5
 pic.jpg

@@ -20,8 +20,8 @@ def face_finder(imagePath):
         minNeighbors=3,
         minSize=(30, 30)
     )
-
+    roi_color = []
     for (x, y, w, h) in faces:
-        crop_face(image, x, y, w, h)
+        roi_color = crop_face(image, x, y, w, h)
 
-    return faces
+    return roi_color, [x, y, w, h]
