@@ -30,7 +30,7 @@ def read_whole_csv(path):
 
 
 def split_dataset(dataset, test_ratio=0.20):
-    """Split dataset (pandas df) into training and testing subsets"""
+    """Split dataset (pandas df) into two subsets"""
     test_indices = np.random.rand(len(dataset)) < test_ratio
     return dataset[~test_indices], dataset[test_indices]
 
@@ -52,7 +52,6 @@ def prep_image(dp, size=cfg.CROP_SIZE, images_path=cfg.IMAGES_PATH):
     image = cv2.imread(images_path + dp[0])
     image = image[int(dp[1][1]):int(dp[1][1]) + wh,
                   int(dp[1][0]):int(dp[1][0]) + wh]
-    # image = crop_face(image, int(dp[1][0]), int(dp[1][1]), wh, wh)
 
     # resize image to size * size
     image = Image.fromarray(image)
@@ -63,8 +62,13 @@ def prep_image(dp, size=cfg.CROP_SIZE, images_path=cfg.IMAGES_PATH):
     return image, points
 
 
-def train_model(labels_path=cfg.LABELS_PATH, checkpoint_path=cfg.CHECKPOINT_PATH, size = cfg.CROP_SIZE):
-    ds = read_whole_csv(labels_path)
+def train_new_model(dataset=cfg.LABELS_PATH,
+                    checkpoint_path=cfg.CHECKPOINT_PATH,
+                    size=cfg.CROP_SIZE,
+                    epochs=10,
+                    checkpoints=True):
+
+    ds = read_whole_csv(dataset)
     ds = pd.DataFrame(ds)
     train_ds, test_ds = split_dataset(ds)
 
@@ -99,10 +103,18 @@ def train_model(labels_path=cfg.LABELS_PATH, checkpoint_path=cfg.CHECKPOINT_PATH
         save_weights_only=True,
         save_freq=5*batch_size)
 
-    model.fit(trainX,
-              trainY,
-              epochs=1,
-              validation_data=(testX, testY),
-              shuffle=True,
-              callbacks=[cp_callback])
+    if checkpoints:
+        model.fit(trainX,
+                  trainY,
+                  epochs=epochs,
+                  validation_data=(testX, testY),
+                  shuffle=True,
+                  callbacks=[cp_callback])
+    else:
+        model.fit(trainX,
+                  trainY,
+                  epochs=epochs,
+                  validation_data=(testX, testY),
+                  shuffle=True)
+
     return model
