@@ -77,7 +77,7 @@ def main():
     # ml = train.train_model(size = 128, checkpoints = False)
     ml = model.load_model('models\\x128NA-89.h5')
     image = predict_image(ml,  'data\data\images\\0 (19).jpg',
-                          size=128, save_path='pic.jpeg')
+                          size=128, save_path='output.jpeg')
     return image
 
 
