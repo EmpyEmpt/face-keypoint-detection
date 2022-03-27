@@ -10,4 +10,4 @@ face_finder.py
 
 training_*/
 saved_model/
-models/
+# models/
