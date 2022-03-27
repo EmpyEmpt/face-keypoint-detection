@@ -10,7 +10,7 @@ import model
 def predict_image(model, image_path,  size, image=None, save_path=None):
     if image is None:
         image = cv2.imread(image_path)
-    # image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
+    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     faceCascade = cv2.CascadeClassifier(
@@ -44,11 +44,12 @@ def predict_image(model, image_path,  size, image=None, save_path=None):
                   (dimsCrop[0][3] / size) + dimsCrop[0][1]))
 
     image = cv2.imread(image_path)
-    # image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
+    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
 
     for i in range(68):
         image = cv2.circle(image, (x_[i], y_[i]), 1,
                            (0, 0, 255), int(image.shape[1] * 0.006))
+
     if save_path is not None:
         cv2.imwrite(save_path, image)
     return image
@@ -67,11 +68,17 @@ def predict_stream(model, size=cfg.CROP_SIZE):
     cv2.destroyAllWindows()
 
 
+def run(image: str):
+    ml = model.load_model('models\\x128NA-89.h5')
+    predict_image(ml,  image, size=128, save_path='static\\pic.jpeg')
+
+
 def main():
     # ml = train.train_model(size = 128, checkpoints = False)
     ml = model.load_model('models\\x128NA-89.h5')
-    predict_image(ml,  'data\data\images\\0 (19).jpg',
-                  size=128, save_path='pic.jpeg')
+    image = predict_image(ml,  'data\data\images\\0 (19).jpg',
+                          size=128, save_path='pic.jpeg')
+    return image
 
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 __pycache__/
-pic.jpeg
+*.jpeg
+*.jpg
+*.png
 
 run_.ipynb
 smallervggnet.py
