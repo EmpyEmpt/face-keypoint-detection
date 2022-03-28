@@ -1,5 +1,6 @@
-# Dataset: 
+# Datasets: 
 https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata
+https://github.com/NVlabs/ffhq-dataset
 # Landmarks:  
 -   Jaw Points = 0–16
 -   Right Brow Points = 17–21

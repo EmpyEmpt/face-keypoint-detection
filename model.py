@@ -12,12 +12,12 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import GlobalAveragePooling2D
 
 
-def build(size):
+def build(input_dim_size, output=cfg.OUTPUTS):
     model = Sequential()
 
-    # model.add(BatchNormalization(input_shape=(size, size, 3)))
+    # model.add(BatchNormalization(input_shape=(input_dim_size, input_dim_size, 3)))
     model.add(Conv2D(24, (5, 5), padding='same',
-              input_shape=(size, size, 3)))
+              input_shape=(input_dim_size, input_dim_size, 3)))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='valid'))
 
@@ -42,7 +42,7 @@ def build(size):
 
     model.add(Dense(1000, activation='relu'))
     model.add(Dense(500, activation='relu'))
-    model.add(Dense(136))
+    model.add(Dense(output))
     return model
 
 
