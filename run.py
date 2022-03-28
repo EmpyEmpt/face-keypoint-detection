@@ -5,6 +5,7 @@ from PIL import Image
 import cv2
 import train
 import model
+import dlib
 
 
 def predict_image(model, image_path,  size, image=None, save_path=None):
@@ -68,9 +69,32 @@ def predict_stream(model, size=cfg.CROP_SIZE):
     cv2.destroyAllWindows()
 
 
+def dlib_reference(image_path: str, image=None, save_path=None):
+    if image is None:
+        image = cv2.imread(image_path)
+    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
+    detector = dlib.get_frontal_face_detector()
+    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+    gray = cv2.cvtColor(src=image, code=cv2.COLOR_BGR2GRAY)
+    faces = detector(gray)
+
+    for face in faces:
+        landmarks = predictor(image=gray, box=face)
+        for n in range(0, 68):
+            x = landmarks.part(n).x
+            y = landmarks.part(n).y
+            cv2.circle(img=image, center=(x, y), radius=3,
+                       color=(0, 255, 0), thickness=-1)
+
+    if save_path is not None:
+        cv2.imwrite(save_path, image)
+    return image
+
+
 def run(image: str):
     ml = model.load_model('models\\x128NA-89.h5')
-    predict_image(ml,  image, size=128, save_path='static\\pic.jpeg')
+    predict_image(ml,  image, size=128, save_path='static\\output.jpeg')
+    dlib_reference(image_path=image, save_path='static\\dlib.jpeg')
 
 
 def main():
