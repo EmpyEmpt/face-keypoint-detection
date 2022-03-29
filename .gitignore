@@ -10,4 +10,5 @@ face_finder.py
 
 training_*/
 saved_model/
-# models/
+models/
+!./x128NA-89.h5
