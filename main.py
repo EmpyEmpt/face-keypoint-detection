@@ -12,10 +12,10 @@ def start():
 @app.route('/face-segmentation', methods=['POST'])
 def main():
     file = request.files['image']
-    file.save('static\\input.jpeg')
-    run.run('static\\input.jpeg')
+    file.save('static/input.jpeg')
+    run.run('static/input.jpeg')
     return render_template('out.html')
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

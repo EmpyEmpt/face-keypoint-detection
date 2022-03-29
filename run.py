@@ -3,12 +3,10 @@ import numpy as np
 import config as cfg
 from PIL import Image
 import cv2
-import train
-import model
 import dlib
 
 
-def predict_image(model, image_path,  size, image=None, save_path=None):
+def predict_image(model, image_path,  size=cfg.CROP_SIZE, image=None, save_path=None):
     if image is None:
         image = cv2.imread(image_path)
     image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
@@ -92,14 +90,13 @@ def dlib_reference(image_path: str, image=None, save_path=None):
 
 
 def run(image: str):
-    ml = model.load_model('models\\x128NA-89.h5')
-    predict_image(ml,  image, size=128, save_path='static\\output.jpeg')
-    dlib_reference(image_path=image, save_path='static\\dlib.jpeg')
+    ml = tf.keras.models.load_model('x128NA-89.h5')
+    predict_image(ml,  image, size=128, save_path='static/output.jpeg')
+    dlib_reference(image_path=image, save_path='static/dlib.jpeg')
 
 
 def main():
-    # ml = train.train_model(size = 128, checkpoints = False)
-    ml = model.load_model('models\\x128NA-89.h5')
+    ml = tf.keras.models.load_model('x128NA-89.h5')
     image = predict_image(ml,  'data\data\images\\0 (19).jpg',
                           size=128, save_path='output.jpeg')
     return image
