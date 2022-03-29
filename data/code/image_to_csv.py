@@ -6,7 +6,7 @@ import config as cfg
 import pandas as pd
 
 
-def images_to_csv(dataset_path=cfg.DATASET_PATH, output_path=cfg.OUTPUT_PATH, verbose=2):
+def images_to_csv(dataset_path: str, output_path: str, verbose=2):
     """Dataset prepation: pictures to dots"""
     d = []
     p = "shape_predictor_68_face_landmarks.dat"
