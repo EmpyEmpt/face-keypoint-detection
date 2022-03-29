@@ -7,6 +7,9 @@
 - send POST request to /facial-landmark-detection with 'image' parameter
 - interactive web verison availible at /
 - docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)
+~~~bash
+docker pull empyempt/fld:1.0
+~~~
 
 
 ## Datasets: 
