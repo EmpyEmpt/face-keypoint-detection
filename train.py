@@ -62,13 +62,13 @@ def prep_image(dp, size=cfg.CROP_SIZE, images_path=cfg.IMAGES_PATH):
     return image, points
 
 
-def train_new_model(dataset=cfg.LABELS_PATH,
+def train_new_model(labels=cfg.LABELS_PATH,
                     checkpoint_path=cfg.CHECKPOINT_PATH,
                     size=cfg.CROP_SIZE,
                     epochs=10,
                     checkpoints=True):
 
-    ds = read_whole_csv(dataset)
+    ds = read_whole_csv(labels)
     ds = pd.DataFrame(ds)
     train_ds, test_ds = split_dataset(ds)
 
