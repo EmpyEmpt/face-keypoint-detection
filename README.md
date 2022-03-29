@@ -1,7 +1,27 @@
-# Datasets: 
-https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata
-https://github.com/NVlabs/ffhq-dataset (https://drive.google.com/drive/folders/1tZUcXDBeOibC6jcMCtgRRz67pzrAHeHL)
-# Landmarks:  
+# Facial-landmark-detection
+
+## Usage:
+- git clone
+- pip install -r requirements.txt
+- python3 main.py
+- send POST request to /facial-landmark-detection with 'image' parameter
+- interactive web verison availible at /
+- docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)
+
+
+## Datasets: 
+[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)  
+[Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)
+
+Exact images and .csv files can be pulled via dvc
+~~~bash
+dvc pull
+~~~
+
+## Model
+CNN implemented in Keras (exact architecture can be found in model.py)
+
+## Landmarks:  
 -   Jaw Points = 0–16
 -   Right Brow Points = 17–21
 -   Left Brow Points = 22–26
@@ -11,17 +31,35 @@ https://github.com/NVlabs/ffhq-dataset (https://drive.google.com/drive/folders/1
 -   Mouth Points = 48–60
 -   Lips Points = 61–67
 
-# Explanation
-Processed dataset consists of:
-TLx, TLy, BRx, BRy, x0, y0, x1, y1, ..., x67, y67
-(x, y) are relative to the upper left corner of bounding box
 
-    ex. = image with size (300, 300)
-    TL, BR points to area from (100, 100) to (200, 200)
-    x0, y0 = 50, 50 would correspond to 150, 150 on original image 
-
-# Output
+## Output
 Model outputs tensor with shape (136, ) where for (k in 0->67) 
-[k] is X for landmark k
-[k+1] is Y for landmark k
-   
+- [k] is X for landmark k
+- [k+1] is Y for landmark k
+
+## Training and tinkering
+
+You can train model yourself on your own dataset  
+__It's best to use config files here__  
+
+First you need to prepare a csv file, which can be done by 
+```python
+import data.code.images_to_csv as prep
+prep.images_to_csv('dataset_path', 'output_path')
+```
+
+Now you can train the model
+```python
+import train as tr
+# most of this parameters are taken from config.py as defaults
+model = tr.train_new_model(labels = 'path_to_csv', size = 128, epochs = 30, checkpoints = False)
+```
+
+Finally, you can see your model working
+```python
+import run
+#to predict on image
+run.predict_on_image(model, size = 128, image_path  = 'image_path', output = 'output_path')
+# to predict on video stream from webcam (press esc to stop)
+run.predict_stream(model, size = 128)
+```
