@@ -40,7 +40,7 @@ def crop_face(image, x, y, w, h):
     return image
 
 
-def prep_image(dp, size=cfg.CROP_SIZE, images_path=cfg.IMAGES_PATH):
+def prep_image(dp, size=cfg.CROP_SIZE, dataset_path=cfg.DATASET_PATH):
     """Datapoint as list -> Image   - np array (size, size, 3))
                             Points  - tensor (136, )
     Image preparation for use in training/validation
@@ -49,7 +49,7 @@ def prep_image(dp, size=cfg.CROP_SIZE, images_path=cfg.IMAGES_PATH):
     points = [(float(a) / wh) for a in dp[3]]
 
     # crop out face from image
-    image = cv2.imread(images_path + dp[0])
+    image = cv2.imread(dataset_path + dp[0])
     image = image[int(dp[1][1]):int(dp[1][1]) + wh,
                   int(dp[1][0]):int(dp[1][0]) + wh]
 
@@ -66,7 +66,7 @@ def train_new_model(labels=cfg.LABELS_PATH,
                     checkpoint_path=cfg.CHECKPOINT_PATH,
                     size=cfg.CROP_SIZE,
                     epochs=10,
-                    checkpoints=True):
+                    checkpoints=False):
 
     ds = read_whole_csv(labels)
     ds = pd.DataFrame(ds)

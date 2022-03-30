@@ -1,12 +1,12 @@
 import tensorflow as tf
 import numpy as np
-import config as cfg
 from PIL import Image
 import cv2
 import dlib
 
 
-def predict_image(model, image_path,  size=cfg.CROP_SIZE, image=None, save_path=None):
+def predict_image(model, image_path, image=None, save_path=None):
+    size = model.input_shape[1]
     if image is None:
         image = cv2.imread(image_path)
     image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
@@ -54,12 +54,13 @@ def predict_image(model, image_path,  size=cfg.CROP_SIZE, image=None, save_path=
     return image
 
 
-def predict_stream(model, size=cfg.CROP_SIZE):
+def predict_stream(model):
+
     cap = cv2.VideoCapture(0)
     while True:
         _, frame = cap.read()
         frame = cv2.copyMakeBorder(frame, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
-        frame = predict_image(model=model, image=frame, size=size)
+        frame = predict_image(model=model, image=frame)
         cv2.imshow(winname="Face", mat=frame)
         if cv2.waitKey(delay=1) == 27:
             break
@@ -89,18 +90,7 @@ def dlib_reference(image_path: str, image=None, save_path=None):
     return image
 
 
-def run(image: str):
-    ml = tf.keras.models.load_model('x128NA-89.h5')
-    predict_image(ml,  image, size=128, save_path='static/output.jpeg')
-    dlib_reference(image_path=image, save_path='static/dlib.jpeg')
-
-
-def main():
-    ml = tf.keras.models.load_model('x128NA-89.h5')
-    image = predict_image(ml,  'data\data\images\\0 (19).jpg',
-                          size=128, save_path='output.jpeg')
-    return image
-
-
-if __name__ == "__main__":
-    main()
+def run(image_path: str, save=True):
+    model = tf.keras.models.load_model('model.h5')
+    predict_image(model, image_path=image_path, save_path='static/output.jpeg')
+    dlib_reference(image_path=image_path, save_path='static/dlib.jpeg')

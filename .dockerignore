@@ -6,19 +6,19 @@ __pycache__
 .dvc/
 data/
 models/
+training_1/
 
 .dvcignore
 .gitignore
 .gitattributes
 .dockerignore
 
-docker-compose.yml
 Dockerfile
-
-face_finder.py
-architectures.py
 README.md
-run_.ipynb
+
+config.py
+architectures.py
 smallervggnet.py
 model.py
 train.py
+run_.ipynb

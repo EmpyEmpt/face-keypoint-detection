@@ -2,7 +2,6 @@ from imutils import face_utils
 import dlib
 import cv2
 import os
-import config as cfg
 import pandas as pd
 
 

@@ -7,7 +7,9 @@
 - send POST request to /facial-landmark-detection with 'image' parameter
 - interactive web verison availible at /
 - docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)
-
+~~~bash
+docker pull empyempt/fld:1.0
+~~~
 
 ## Datasets: 
 [Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)  
@@ -52,14 +54,14 @@ Now you can train the model
 ```python
 import train as tr
 # most of this parameters are taken from config.py as defaults
-model = tr.train_new_model(labels = 'path_to_csv', size = 128, epochs = 30, checkpoints = False)
+model = tr.train_new_model(labels = 'path_to_csv', epochs = 30, checkpoints = False)
 ```
 
 Finally, you can see your model working
 ```python
 import run
 #to predict on image
-run.predict_on_image(model, size = 128, image_path  = 'image_path', output = 'output_path')
+run.predict_on_image(model, image_path  = 'image_path', output = 'output_path')
 # to predict on video stream from webcam (press esc to stop)
-run.predict_stream(model, size = 128)
+run.predict_stream(model)
 ```
