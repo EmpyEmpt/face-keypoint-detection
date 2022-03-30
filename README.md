@@ -8,12 +8,8 @@
 - interactive web verison availible at /
 - docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)
 ~~~bash
-docker pull empyempt/fld:1.0
+docker pull empyempt/fld:1.0    
 ~~~
-<<<<<<< HEAD
-=======
-
->>>>>>> de7f5be21d3806daf502d7d5ef2cf17ef0da3b3e
 
 ## Datasets: 
 [Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)  
