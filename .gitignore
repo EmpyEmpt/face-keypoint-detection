@@ -3,6 +3,7 @@ __pycache__/
 *.jpg
 *.png
 
+!static/*.jpeg
 run_.ipynb
 smallervggnet.py
 architectures.py

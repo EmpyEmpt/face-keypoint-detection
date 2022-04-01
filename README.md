@@ -2,10 +2,10 @@
 
 ## Examples 
 My implementation:
-![My implementation](static\output.jpeg "My implementation")
+![My implementation](static/output.jpeg "My implementation")
 
 DLib reference:
-![DLib reference](static\dlib.jpeg "DLib reference")
+![DLib reference](static/dlib.jpeg "DLib reference")
 ## Usage:
 - git clone
 - pip install -r requirements.txt
