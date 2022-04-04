@@ -5,11 +5,7 @@ __pycache__/
 
 !static/*.jpeg
 run_.ipynb
-smallervggnet.py
 architectures.py
-face_finder.py
 
 training_*/
-saved_model/
 models/
-!./x128NA-89.h5

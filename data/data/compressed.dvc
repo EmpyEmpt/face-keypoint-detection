@@ -1,0 +1,5 @@
+outs:
+- md5: 53afdfd6143af767c9b385e535a58ebf.dir
+  size: 519656133
+  nfiles: 4
+  path: compressed
