@@ -35,12 +35,7 @@ def split_dataset(dataset, test_ratio=0.20):
     return dataset[~test_indices], dataset[test_indices]
 
 
-def crop_face(image, x, y, w, h):
-    image = image[y:y + h, x:x + w]
-    return image
-
-
-def prep_image(dp, size=cfg.CROP_SIZE, dataset_path=cfg.DATASET_PATH):
+def prep_image(dp, size=cfg.IMAGE_SIZE, dataset_path=cfg.DATASET_PATH):
     """Datapoint as list -> Image   - np array (size, size, 3))
                             Points  - tensor (136, )
     Image preparation for use in training/validation
@@ -62,7 +57,9 @@ def prep_image(dp, size=cfg.CROP_SIZE, dataset_path=cfg.DATASET_PATH):
     return image, points
 
 
-def create_splits(ds, size=cfg.CROP_SIZE):
+def create_splits(ds, size=cfg.IMAGE_SIZE):
+    """Creates new dataset splits from provided dataset"""
+
     train_ds, test_ds = split_dataset(ds)
 
     trainx = []
@@ -93,6 +90,8 @@ def create_splits(ds, size=cfg.CROP_SIZE):
 
 
 def compress_splits(trainx, trainy, testx, testy, dir='data/data/compressed/'):
+    """Compresses existing dataset split as .npz"""
+
     trainx_ = trainx.numpy()
     trainy_ = trainy.numpy()
     testx_ = testx.numpy()
@@ -104,6 +103,8 @@ def compress_splits(trainx, trainy, testx, testy, dir='data/data/compressed/'):
 
 
 def uncompress_splits(dir='data/data/compressed/'):
+    """Decompresses existing dataset split as .npz
+    Returns tf2 tensors"""
     trainx = np.load(dir + 'trainx.npz')
     trainy = np.load(dir + 'trainy.npz')
     testx = np.load(dir + 'testx.npz')
@@ -123,6 +124,8 @@ def uncompress_splits(dir='data/data/compressed/'):
 
 
 def get_splits(labels=cfg.LABELS_PATH, create_new=False):
+    """Returns dataset splits as tf2 tensors
+    Either uncompresses from .npz or creates new one"""
     ds = read_whole_csv(labels)
     ds = pd.DataFrame(ds)
     train_ds, test_ds = split_dataset(ds)
@@ -137,7 +140,7 @@ def get_splits(labels=cfg.LABELS_PATH, create_new=False):
 # temporarily in here
 def train_new_model(labels=cfg.LABELS_PATH,
                     checkpoint_path=cfg.CHECKPOINT_PATH,
-                    size=cfg.CROP_SIZE,
+                    size=cfg.IMAGE_SIZE,
                     epochs=10,
                     checkpoints=False):
 

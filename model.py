@@ -46,7 +46,7 @@ def build(input_dim_size, output=cfg.OUTPUTS):
     return model
 
 
-def compile_model(load_latest=False, size=cfg.CROP_SIZE, checkpoint_path=cfg.CHECKPOINT_PATH):
+def compile_model(size, load_latest=False,  checkpoint_path=cfg.CHECKPOINT_PATH):
     model = build(size)
     model.compile(optimizer='rmsprop', loss='mse', metrics=['accuracy'])
 

@@ -5,13 +5,21 @@ import cv2
 import dlib
 
 
-def predict_image(model, image_path, image=None, save_path=None):
-    size = model.input_shape[1]
-    if image is None:
-        image = cv2.imread(image_path)
-    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def predict_image(model, image, save_path=None):
+    """Runs prediction on a single image
+    Expects tf2 model and image: 
+    - decoded as list
+    - path as str """
 
+    if isinstance(image, str):
+        image = cv2.imread(image)
+    elif not isinstance(image, list):
+        print('Oi, you cant do that mate, I need em inputs bruda')
+        return
+
+    # prepare image
+    size = model.input_shape[1]
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     faceCascade = cv2.CascadeClassifier(
         cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     faces = faceCascade.detectMultiScale(
@@ -23,17 +31,19 @@ def predict_image(model, image_path, image=None, save_path=None):
 
     dimsCrop = []
     for (x, y, w, h) in faces:
-        image = image[y:y + h, x:x + w]
+        input_image = image[y:y + h, x:x + w]
         dimsCrop.append([x, y, w, h])
 
-    image = Image.fromarray(image)
-    image = image.resize((size, size))
-    image = np.array(image)
+    input_image = Image.fromarray(input_image)
+    input_image = input_image.resize((size, size))
+    input_image = np.array(input_image)
 
     # predict
     input_image = tf.cast(image, dtype=tf.float32) / 255
     input_image = tf.expand_dims(input_image, axis=0)
     res = model.predict(input_image)
+
+    # put predictions on image
     x_ = []
     y_ = []
     for i in range(0, 136, 2):
@@ -42,20 +52,18 @@ def predict_image(model, image_path, image=None, save_path=None):
         y_.append(int(res[0][i+1] * size *
                   (dimsCrop[0][3] / size) + dimsCrop[0][1]))
 
-    image = cv2.imread(image_path)
-    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
-
     for i in range(68):
         image = cv2.circle(image, (x_[i], y_[i]), 1,
                            (0, 0, 255), int(image.shape[1] * 0.006))
 
     if save_path is not None:
         cv2.imwrite(save_path, image)
+        return
     return image
 
 
 def predict_stream(model):
-
+    """Runs prediction on live webcam"""
     cap = cv2.VideoCapture(0)
     while True:
         _, frame = cap.read()
@@ -68,10 +76,18 @@ def predict_stream(model):
     cv2.destroyAllWindows()
 
 
-def dlib_reference(image_path: str, image=None, save_path=None):
-    if image is None:
-        image = cv2.imread(image_path)
-    image = cv2.copyMakeBorder(image, 50, 50, 50, 50, cv2.BORDER_CONSTANT)
+def dlib_reference(image, save_path=None):
+    """Runs prediction on a single image 
+    Uses dlib, expects image: 
+    - decoded as list
+    - path as str """
+
+    if isinstance(image, str):
+        image = cv2.imread(image)
+    elif not isinstance(image, list):
+        print('Oi, you cant do that mate, I need em inputs bruda')
+        return
+
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
     gray = cv2.cvtColor(src=image, code=cv2.COLOR_BGR2GRAY)
@@ -87,10 +103,12 @@ def dlib_reference(image_path: str, image=None, save_path=None):
 
     if save_path is not None:
         cv2.imwrite(save_path, image)
+        return
     return image
 
 
-def run(image_path: str, save=True):
+def run(image):
+    """Runs predictions on both tf2 model and dlib"""
     model = tf.keras.models.load_model('model.h5')
-    predict_image(model, image_path=image_path, save_path='static/output.jpeg')
-    dlib_reference(image_path=image_path, save_path='static/dlib.jpeg')
+    predict_image(model, image=image, save_path='static/output.jpeg')
+    dlib_reference(image=image, save_path='static/dlib.jpeg')
