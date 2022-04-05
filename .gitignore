@@ -7,5 +7,5 @@ __pycache__/
 run_.ipynb
 architectures.py
 
-training_*/
+training*/
 models/
