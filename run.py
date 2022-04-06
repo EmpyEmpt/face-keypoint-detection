@@ -5,17 +5,11 @@ import cv2
 import dlib
 
 
-def predict_image(model, image, save_path=None):
+def predict_image(model, image: str, save_path=None):
     """Runs prediction on a single image
-    Expects tf2 model and image: 
-    - decoded as list
-    - path as str """
+    Expects tf2 model and path to image"""
 
-    if isinstance(image, str):
-        image = cv2.imread(image)
-    elif not isinstance(image, list):
-        print('Oi, you cant do that mate, I need em inputs bruda')
-        return
+    image = cv2.imread(image)
 
     # prepare image
     size = model.input_shape[1]
@@ -39,7 +33,7 @@ def predict_image(model, image, save_path=None):
     input_image = np.array(input_image)
 
     # predict
-    input_image = tf.cast(image, dtype=tf.float32) / 255
+    input_image = tf.cast(input_image, dtype=tf.float32) / 255
     input_image = tf.expand_dims(input_image, axis=0)
     res = model.predict(input_image)
 
@@ -59,7 +53,7 @@ def predict_image(model, image, save_path=None):
     if save_path is not None:
         cv2.imwrite(save_path, image)
         return
-    return image
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
 def predict_stream(model):
