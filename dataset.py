@@ -5,7 +5,6 @@ import config as cfg
 import cv2
 from PIL import Image
 import tensorflow as tf
-import model as md
 
 
 def read_whole_csv(path):
@@ -131,44 +130,8 @@ def fetch_splits(labels=cfg.LABELS_PATH, dataset_path=cfg.DATASET_PATH, size=cfg
     Either uncompresses from .npz or creates new one"""
 
     if create_new:
-        create_splits(labels, size=size, dataset_path=dataset_path)
+        trainx, trainy, testx, testy = create_splits(
+            labels, size=size, dataset_path=dataset_path)
     else:
         trainx, trainy, testx, testy = uncompress_splits()
     return trainx, trainy, testx, testy
-
-
-# temporarily in here
-def train_new_model(labels=cfg.LABELS_PATH,
-                    dataset_path=cfg.DATASET_PATH,
-                    checkpoint_path=cfg.CHECKPOINT_PATH,
-                    size=cfg.IMAGE_SIZE,
-                    epochs=10,
-                    checkpoints=False):
-
-    trainx, trainy, testx, testy = fetch_splits(
-        labels, dataset_path, size, False)
-
-    model = md.compile_model(size=size)
-
-    batch_size = 78
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(
-        filepath=checkpoint_path,
-        verbose=1,
-        save_weights_only=True,
-        save_freq=5*batch_size)
-
-    if checkpoints:
-        model.fit(trainx,
-                  trainy,
-                  epochs=epochs,
-                  validation_data=(testx, testy),
-                  shuffle=True,
-                  callbacks=[cp_callback])
-    else:
-        model.fit(trainx,
-                  trainy,
-                  epochs=epochs,
-                  validation_data=(testx, testy),
-                  shuffle=True)
-
-    return model
