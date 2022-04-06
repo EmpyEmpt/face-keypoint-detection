@@ -18,7 +18,7 @@ docker pull empyempt/fld:latest
 ~~~
 
 ## Datasets: 
-~~[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)~~ 
+~~[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)~~  
 [Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)  
 
 Exact images and .csv files can be pulled via [DVC](https://dvc.org/)
