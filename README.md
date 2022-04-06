@@ -1,32 +1,32 @@
 # Facial-landmark-detection
 
-## Examples 
-My implementation:
-![My implementation](static/output.jpeg "My implementation")
+## Example
+|            My implementation:            |           DLib reference:           |
+| :--------------------------------------: | :---------------------------------: |
+| ![My implementation](static/output.jpeg) | ![DLib reference](static/dlib.jpeg) |
 
-DLib reference:
-![DLib reference](static/dlib.jpeg "DLib reference")
 ## Usage:
 - git clone
 - pip install -r requirements.txt
 - python3 main.py
 - send POST request to /facial-landmark-detection with 'image' parameter
 - interactive web verison availible at /
-- docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)
+- docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)  
+
 ~~~bash
-docker pull empyempt/fld:1.0    
+docker pull empyempt/fld:latest
 ~~~
 
 ## Datasets: 
-[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)  
-[Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)
+~~[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)~~ 
+[Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)  
 
-Exact images and .csv files can be pulled via dvc
+Exact images and .csv files can be pulled via [DVC](https://dvc.org/)
 ~~~bash
 dvc pull
 ~~~
 
-## Model
+## Model  
 CNN implemented in Keras (exact architecture can be found in model.py)
 
 ## Landmarks:  
@@ -41,33 +41,10 @@ CNN implemented in Keras (exact architecture can be found in model.py)
 
 
 ## Output
-Model outputs tensor with shape (136, ) where for (k in 0->67) 
+Model outputs tensor with shape (136, ) where for (k in 0->67)  
 - [k] is X for landmark k
 - [k+1] is Y for landmark k
 
 ## Training and tinkering
 
-You can train model yourself on your own dataset  
-__It's best to use config files here__  
-
-First you need to prepare a csv file, which can be done by 
-```python
-import data.code.images_to_csv as prep
-prep.images_to_csv('dataset_path', 'output_path')
-```
-
-Now you can train the model
-```python
-import train as tr
-# most of this parameters are taken from config.py as defaults
-model = tr.train_new_model(labels = 'path_to_csv', epochs = 30, checkpoints = False)
-```
-
-Finally, you can see your model working
-```python
-import run
-#to predict on image
-run.predict_on_image(model, image_path  = 'image_path', output = 'output_path')
-# to predict on video stream from webcam (press esc to stop)
-run.predict_stream(model)
-```
+You can run predictions, train new models on existing dataset and create new datasets interactively in provided Notebook (example.ipynb)
