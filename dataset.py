@@ -57,9 +57,11 @@ def prep_image(dp, size=cfg.IMAGE_SIZE, dataset_path=cfg.DATASET_PATH):
     return image, points
 
 
-def create_splits(ds, size=cfg.IMAGE_SIZE):
+def create_splits(labels=cfg.LABELS_PATH, size=cfg.IMAGE_SIZE, dataset_path=cfg.DATASET_PATH):
     """Creates new dataset splits from provided dataset"""
 
+    ds = read_whole_csv(labels)
+    ds = pd.DataFrame(ds)
     train_ds, test_ds = split_dataset(ds)
 
     trainx = []
@@ -69,14 +71,14 @@ def create_splits(ds, size=cfg.IMAGE_SIZE):
 
     for i in range(train_ds.shape[0]):
         image, points = prep_image(
-            train_ds.iloc[i], dataset_path='data/data/images/', size=size)
+            train_ds.iloc[i], dataset_path=dataset_path, size=size)
         input_image = tf.cast(image, dtype=tf.int32)
         trainx.append(input_image)
         trainy.append(points)
 
     for i in range(test_ds.shape[0]):
         image, points = prep_image(
-            train_ds.iloc[i], dataset_path='data/data/images/', size=size)
+            train_ds.iloc[i], dataset_path=dataset_path, size=size)
         input_image = tf.cast(image, dtype=tf.int32)
         testx.append(input_image)
         testy.append(points)
@@ -86,10 +88,11 @@ def create_splits(ds, size=cfg.IMAGE_SIZE):
 
     testx = tf.convert_to_tensor(testx, dtype=tf.float32) / 255
     testy = tf.convert_to_tensor(testy, dtype=tf.float32)
+
     return trainx, trainy, testx, testy
 
 
-def compress_splits(trainx, trainy, testx, testy, dir='data/data/compressed/'):
+def compress_splits(trainx, trainy, testx, testy, dir=cfg.COMPRESSED_PATH):
     """Compresses existing dataset split as .npz"""
 
     trainx_ = trainx.numpy()
@@ -102,7 +105,7 @@ def compress_splits(trainx, trainy, testx, testy, dir='data/data/compressed/'):
     np.savez_compressed(dir + 'testy.npz', testy_)
 
 
-def uncompress_splits(dir='data/data/compressed/'):
+def uncompress_splits(dir=cfg.COMPRESSED_PATH):
     """Decompresses existing dataset split as .npz
     Returns tf2 tensors"""
     trainx = np.load(dir + 'trainx.npz')
@@ -123,15 +126,12 @@ def uncompress_splits(dir='data/data/compressed/'):
     return trainx, trainy, testx, testy
 
 
-def get_splits(labels=cfg.LABELS_PATH, create_new=False):
+def fetch_splits(labels=cfg.LABELS_PATH, dataset_path=cfg.DATASET_PATH, size=cfg.IMAGE_SIZE,  create_new=False):
     """Returns dataset splits as tf2 tensors
     Either uncompresses from .npz or creates new one"""
-    ds = read_whole_csv(labels)
-    ds = pd.DataFrame(ds)
-    train_ds, test_ds = split_dataset(ds)
 
     if create_new:
-        create_splits(train_ds, test_ds)
+        create_splits(labels, size=size, dataset_path=dataset_path)
     else:
         trainx, trainy, testx, testy = uncompress_splits()
     return trainx, trainy, testx, testy
@@ -139,12 +139,14 @@ def get_splits(labels=cfg.LABELS_PATH, create_new=False):
 
 # temporarily in here
 def train_new_model(labels=cfg.LABELS_PATH,
+                    dataset_path=cfg.DATASET_PATH,
                     checkpoint_path=cfg.CHECKPOINT_PATH,
                     size=cfg.IMAGE_SIZE,
                     epochs=10,
                     checkpoints=False):
 
-    trainx, trainy, testx, testy = get_splits(labels)
+    trainx, trainy, testx, testy = fetch_splits(
+        labels, dataset_path, size, False)
 
     model = md.compile_model(size=size)
 
