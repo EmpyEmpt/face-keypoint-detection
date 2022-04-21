@@ -5,11 +5,11 @@ app = Flask(__name__)
 
 @app.route('/')
 def start():
-    page = '<form method="post" enctype="multipart/form-data" action="/facial-landmark-detection"><input type="file" name="image"><button type="submit">Send</button></form>'
+    page = '<form method="post" enctype="multipart/form-data" action="/fld"><input type="file" name="image"><button type="submit">Send</button></form>'
     return page
 
 
-@app.route('/facial-landmark-detection', methods=['POST'])
+@app.route('/fld', methods=['POST'])
 def main():
     file = request.files['image']
     file.save('static/input.jpeg')
