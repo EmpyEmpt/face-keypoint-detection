@@ -6,7 +6,7 @@ __pycache__
 .dvc/
 data/
 models/
-training_1/
+venv/
 
 .dvcignore
 .gitignore
@@ -16,9 +16,9 @@ training_1/
 Dockerfile
 README.md
 
-config.py
 architectures.py
-smallervggnet.py
+config.py
+dataset.py
+example.ipynb
 model.py
-train.py
 run_.ipynb
