@@ -1,9 +1,9 @@
 # Facial-landmark-detection
 
 ## Example
-|            My implementation:            |           DLib reference:           |
-| :--------------------------------------: | :---------------------------------: |
-| ![My implementation](static/output.jpeg) | ![DLib reference](static/dlib.jpeg) |
+|           My implementation:           |           DLib reference:           |
+| :------------------------------------: | :---------------------------------: |
+| ![My implementation](static/mine.jpeg) | ![DLib reference](static/dlib.jpeg) |
 
 ## Usage:
 - git clone
@@ -17,8 +17,7 @@
 docker pull empyempt/fld:latest
 ~~~
 
-## Datasets: 
-~~[Male and female faces dataset Kaggle](https://www.kaggle.com/ashwingupta3012/male-and-female-faces-dataset/metadata)~~  
+## Dataset: 
 [Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)  
 
 Exact images and .csv files can be pulled via [DVC](https://dvc.org/)
