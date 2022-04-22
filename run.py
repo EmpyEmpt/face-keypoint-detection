@@ -4,6 +4,15 @@ from PIL import Image
 import cv2
 import dlib
 
+"""What's used for making prediction on a model!
+
+Both functions for tf2-based model on a dlib-face-detector 
+and reference-dlib for predictions are here 
+
+Well, there was a function for running predictions on a 
+tf2-base-modek on a cv2-face-detector, but since the dataset is marked
+using dlib-face-detector - it workes best with it"""
+
 
 def predict_image(model, detector, image: str, save_path=None):
     """Runs prediction on a single image

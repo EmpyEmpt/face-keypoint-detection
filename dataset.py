@@ -6,11 +6,64 @@ import cv2
 from PIL import Image
 import tensorflow as tf
 
+# CODE'S BELOW THE BIG DIRTY EXPLANATION
+"""Explaining what this file is about:
+1. We somehow need to get the landmarks themself, so the net would know WHAT to search for
+    And obviously we don't want to mark A LOT (15k in this dataset) of images ourself
+2. We need to store it somehow
+
+And thus this was created
+
+It stands on a pretty simple (but kind of stupid tbh) logic:
+
+If we need to create a new dataset - we can use some existing model as a reference to 
+recreate its results (but with our model!)
+For this we use create_splits: 
+
+(this should be done in advance, it takes a lot of time and scales linearly with the amount of photos)
+0. Use images_to_csv to run predictions of REFERENCE and store them in .csv 
+    Which'll have strings like 'filename - boundbox coordinates (2 x,y pairs) - (x,y) pairs x68 (as much as reference has)'
+    Since we save all this info in text - we can reuse it! And/or add more easily if we wish
+
+1.  Whenever we need to create the create a new (version of) dataset - we simply use this .csv and our images
+    read_whole_csv does just this - 'unzips' .csv to get all info on perline basis
+
+2. We need to split the data - validation of the model should't be done on the data it has seen
+    split_dataset does it
+    As the name says - it splits our dataset into two
+
+3. We need to crop out the faces and adjust the points coordinates
+    Model DOES NOT DETECT nor CROP the image, we have to do it in advance
+    prep_image plays here:
+        It takes the row gotten after step 1, 
+        crops the face from it,
+        resizes it to the needed size (since model always expects input in the same shape), say 128x128x3
+        recalculates positions of landmarks to be relative to cropped image (face)
+        and packages BOTH image and points into np.array and tf.tensor
+    So now we should have two pairs of x y splitted datasets
+    X is what we feed the model
+    Y is what we expect to recieve
+
+    train* used for training
+    test* used for validation
+
+5. Since we dont want to redo everything everytime we come back - we have to store those 'crops'
+    compress_splits is here!:
+    Simply give you four-peace-dataset and it will save it all in .npz format
+
+And whenever we need to retrieve the dataset:
+    uncompress_splits just unzipz those .npz files to get back that four-peace-dataset
+
+fetch_splits is basically a big simplification of everything and does every step itself
+"""
+
 
 def read_whole_csv(path):
     """Reading csv for further use after preposeccing image
     with 'image to csv' 
-    Implementation ignores images which have negative values"""
+    Implementation ignores images which have negative values
+    """
+    # (as for I'm stupid it is so)
     file = open(path)
     csvreader = csv.reader(file)
     all = []
@@ -127,7 +180,7 @@ def uncompress_splits(dir=cfg.COMPRESSED_PATH):
 
 def fetch_splits(labels=cfg.LABELS_PATH, dataset_path=cfg.DATASET_PATH, size=cfg.IMAGE_SIZE,  create_new=False):
     """Returns dataset splits as tf2 tensors
-    Either uncompresses from .npz or creates new one"""
+    Either uncompresses from .npz files or creates new ones"""
 
     if create_new:
         trainx, trainy, testx, testy = create_splits(
