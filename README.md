@@ -1,4 +1,5 @@
-# Facial-landmark-detection
+# Facial landmark detection
+Using TensorFlow and DLib face detector
 
 ## Example
 |           My implementation:           |           DLib reference:           |
@@ -20,13 +21,14 @@ docker pull empyempt/fld:latest
 ## Dataset: 
 [Flickr-Faces-HQ Dataset (FFHQ)](https://github.com/NVlabs/ffhq-dataset)  
 
-Exact images and .csv files can be pulled via [DVC](https://dvc.org/)
+Exact images, compressed images and .csv files can be pulled via [DVC](https://dvc.org/)
 ~~~bash
 dvc pull
 ~~~
 
 ## Model  
-CNN implemented in Keras (exact architecture can be found in model.py)
+Custom CNN implemented in Keras, exact architecture can be found in model.py
+
 
 ## Landmarks:  
 -   Jaw Points = 0–16
@@ -47,3 +49,7 @@ Model outputs tensor with shape (136, ) where for (k in 0->67)
 ## Training and tinkering
 
 You can run predictions, train new models on existing dataset and create new datasets interactively in provided Notebook (example.ipynb)
+
+
+## P.S.
+Yeah, it could be done a lot better (and I have done similar things better), it's one of my first full-fledged ML projects and I simply wish it ti be out there, hopefully to help someone
