@@ -2,10 +2,16 @@ __pycache__/
 *.jpeg
 *.jpg
 *.png
+*.npz
 
 !static/*.jpeg
-run_.ipynb
+work.ipynb
 architectures.py
 
+data/processed/
+data/processed_compressed/
+data/raw/
+data/raw_compressed/
+!src/data/
 venv/
 models/

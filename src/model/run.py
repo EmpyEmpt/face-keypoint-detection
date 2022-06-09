@@ -1,65 +1,42 @@
 import tensorflow as tf
-import numpy as np
-from PIL import Image
 import cv2
 import dlib
 
-"""What's used for making prediction on a model!
 
-Both functions for tf2-based model on a dlib-face-detector 
-and reference-dlib for predictions are here 
-
-Well, there was a function for running predictions on a 
-tf2-base-modek on a cv2-face-detector, but since the dataset is marked
-using dlib-face-detector - it workes best with it"""
-
-
-def predict_image(model, detector, image: str, save_path=None):
-    """Runs prediction on a single image
-    using dlib face detector
-    Expects tf2 model and path to image"""
-
-    image = cv2.imread(image)
+def predict_image(model, image_path: str, save_path: str):
     size = model.input_shape[1]
+    # load
+    image = cv2.imread(image_path)
 
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # might want to localize face in here
+    # whould also help find multiple faces
+    # ...
 
-    faces = detector(gray)
+    # resize
+    res_factor_x = size / image.shape[0]
+    res_factor_y = size / image.shape[1]
 
-    x1 = faces[0].left()
-    y1 = faces[0].top()
-    x2 = faces[0].right()
-    y2 = faces[0].bottom()
-
-    input_image = image[y1:y2, x1:x2]
-    dimsCrop = [[x1, y1, x2-x1, y2-y1]]
-
-    input_image = Image.fromarray(input_image)
-    input_image = input_image.resize((size, size))
-    input_image = np.array(input_image)
-
-    input_image = tf.cast(input_image, dtype=tf.float32) / 255
+    input_image = cv2.resize(image, (size, size),
+                             interpolation=cv2.INTER_AREA) / 255
+    input_image = tf.convert_to_tensor(input_image, dtype=tf.float32)
     input_image = tf.expand_dims(input_image, axis=0)
-    res = model(input_image)
 
-    x_ = []
-    y_ = []
-    for i in range(0, 136, 2):
-        x_.append(
-            int(res[0][i] * size * (dimsCrop[0][3] / size) + dimsCrop[0][0]))
-        y_.append(int(res[0][i+1] * size *
-                  (dimsCrop[0][3] / size) + dimsCrop[0][1]))
+    # predict
+    res = model(input_image)[0].numpy() * 192
 
-    for i in range(68):
-        image = cv2.circle(image, (x_[i], y_[i]), 1,
-                           (0, 0, 255), int(image.shape[1] * 0.006))
+    # visualize
+    for (x, y) in res:
+        image = cv2.circle(image, (int(x/res_factor_x),
+                           int(y/res_factor_y)), 1, (0, 255, 0), 5)
 
+    # save
     if save_path is not None:
         cv2.imwrite(save_path, image)
         return
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
 
+# might not work now
 def predict_stream(model):
     """Runs prediction on live webcam"""
     cap = cv2.VideoCapture(0)

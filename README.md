@@ -1,5 +1,7 @@
-# Facial landmark detection
-Using TensorFlow and DLib face detector
+# Facial keypoint detection
+Using TensorFlow 
+
+***V2 rework in progress!***
 
 ## Example
 |           My implementation:           |           DLib reference:           |
@@ -13,6 +15,7 @@ Using TensorFlow and DLib face detector
 - send POST request to /facial-landmark-detection with 'image' parameter
 - interactive web verison availible at /
 - docker container availible at [dockerhub](https://hub.docker.com/repository/docker/empyempt/fld)  
+
 
 ~~~bash
 docker pull empyempt/fld:latest
@@ -41,15 +44,7 @@ Custom CNN implemented in Keras, exact architecture can be found in model.py
 -   Lips Points = 61–67
 
 
-## Output
-Model outputs tensor with shape (136, ) where for (k in 0->67)  
-- [k] is X for landmark k
-- [k+1] is Y for landmark k
-
 ## Training and tinkering
 
 You can run predictions, train new models on existing dataset and create new datasets interactively in provided Notebook (example.ipynb)
 
-
-## P.S.
-Yeah, it could be done a lot better (and I have done similar things better), it's one of my first full-fledged ML projects and I simply wish it ti be out there, hopefully to help someone
