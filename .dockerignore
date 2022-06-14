@@ -1,12 +1,11 @@
-*.jpeg
-*.jpg
-*.png
-
 __pycache__
 .dvc/
 data/
 models/
+notebooks/
 venv/
+src/data/
+src/model/architectures.py
 
 .dvcignore
 .gitignore
@@ -15,10 +14,8 @@ venv/
 
 Dockerfile
 README.md
+config.json
 
-architectures.py
-config.py
-dataset.py
-example.ipynb
-model.py
-run_.ipynb
+*.jpeg
+*.jpg
+*.png

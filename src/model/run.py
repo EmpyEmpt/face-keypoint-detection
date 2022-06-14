@@ -39,6 +39,7 @@ def predict_image(model, image_path: str, save_path: str):
 # might not work now
 def predict_stream(model):
     """Runs prediction on live webcam"""
+
     cap = cv2.VideoCapture(0)
     while True:
         _, frame = cap.read()
@@ -55,7 +56,6 @@ def dlib_reference(image, detector, predictor, save_path=None):
     """Runs prediction on a single image using DLib predictor"""
 
     image = cv2.imread(image)
-
     gray = cv2.cvtColor(src=image, code=cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
 
@@ -79,5 +79,5 @@ def run(image):
     detector = dlib.get_frontal_face_detector()
     predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
-    predict_image(model, detector, image, save_path='static/mine.jpeg')
+    predict_image(model, image, save_path='static/mine.jpeg')
     dlib_reference(image, detector, predictor, save_path='static/dlib.jpeg')
