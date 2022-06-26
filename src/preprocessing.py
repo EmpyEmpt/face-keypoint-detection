@@ -1,10 +1,13 @@
+import numpy as np
+
+
 def normalize_images(images):
-    images /= 255
+    images = images.astype(np.float32) / 255
     return images
 
 
 def normalize_keypoints(keypoints, image_size):
-    keypoints /= image_size
+    keypoints = keypoints / image_size[0]
     return keypoints
 
 

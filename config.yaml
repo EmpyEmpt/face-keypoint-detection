@@ -16,7 +16,7 @@ tflite_path: a
 dataset:
   name: initialds
   data_dir: datasets
-  compressed_dir: datadir
+  compressed_dir: "./data/compressed_augmented/"
   split_ratio: 0.20
 
 # train
@@ -52,4 +52,3 @@ callbacks:
     save_model: True
     log_weights: True
     save_graph: True
-    log_gradients: True

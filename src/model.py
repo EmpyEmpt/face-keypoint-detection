@@ -13,7 +13,7 @@ import tempfile
 
 def build(input_shape: int, output_shape: tuple = (68, 2)):
     """Builds a model"""
-    model = Sequential(name='Keypoints detector v3.0.0')
+    model = Sequential(name='KeypointsDetectorv3.0.0')
 
     model.add(Conv2D(64, (1, 1), padding='same',
               input_shape=input_shape))
