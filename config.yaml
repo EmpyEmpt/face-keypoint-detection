@@ -1,0 +1,55 @@
+wandb:
+  name: "Base model"
+  project: FaceKeypointDetection
+
+random_seed: 420
+img_shape: [192, 192, 3]
+img_size: 192
+kp_shape: [68, 2]
+amount: 15000
+
+model_path: a
+pruned_path: a
+tflite_path: a
+
+# dataset
+dataset:
+  name: initialds
+  data_dir: datasets
+  compressed_dir: datadir
+  split_ratio: 0.20
+
+# train
+train:
+  epochs: 100
+  batch_size: 50
+  optimizer: adam
+  metrics: [mse, accuracy]
+
+# optimize model
+optimize:
+  epochs: 15
+  batch_size: 50
+  optimizer: adam
+  metrics: [mse, accuracy]
+
+callbacks:
+  EarlyStopping:
+    min_delta: 0
+    patience: 10
+    verbose: 1
+    restore_best_weights: True
+
+  ReduceLROnPlateau:
+    monitor: val_loss
+    factor: 0.2
+    patience: 3
+    verbose: 1
+    min_delta: 0.0001
+
+  WandbCallback:
+    monitor: val_loss
+    save_model: True
+    log_weights: True
+    save_graph: True
+    log_gradients: True
