@@ -1,0 +1,11 @@
+{
+    "raw_path": "./data/raw/",
+    "raw_compressed_path": "./data/raw_compressed",
+    "processed_compressed_path": "./data/processed_compressed",
+    "image_size": 192,
+    "model_path": "model.h5",
+    "outputs": [
+        68,
+        2
+    ]
+}

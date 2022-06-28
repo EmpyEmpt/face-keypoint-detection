@@ -8,9 +8,11 @@ from keras.layers import Dense
 from keras.layers import GlobalAveragePooling2D
 from keras.layers import Reshape
 
+IMAGE_SIZE = 192
+
 
 def build(image_size: int, outputs: tuple = (68, 2)):
-    """Builds a model"""
+    """Well, you yourself should not really use this - use compile_model"""
     input_shape = (image_size, image_size, 3)
 
     model = Sequential()
@@ -64,6 +66,13 @@ def compile_model(image_size: int):
 def load_model(path: str):
     """Load the model from given {path}"""
     model = tf.keras.models.load_model(path)
+    return model
+
+
+def load_weights(model, path: str):
+    """Loads saved set of weights for already existing {model} from {path}
+    There is no way to save the weight in my(stupid) framework, so why is it needed I wonder..."""
+    model.load_weights(path)
     return model
 
 

@@ -78,8 +78,8 @@ def split_dataset(X, Y, test_ratio: float = 0.20):
 def compress_splits(X, Y, dir: str):
     X = X.numpy()
     Y = Y.numpy()
-    np.savez_compressed(dir + 'Xvalues.npz', X)
-    np.savez_compressed(dir + 'Yvalues.npz', Y)
+    np.savez_compressed(dir + 'Yvalues.npz', X)
+    np.savez_compressed(dir + 'Xvalues.npz', Y)
 
 
 def uncompress_splits(dir: str):
@@ -102,8 +102,8 @@ def fetch_splits(dataset_path: str, image_size: int = 192, amount: int = np.Infi
     if create_new:
         images, keypoints = create_dataset(dataset_path, image_size, amount)
         compress_splits(images, keypoints)
+        trainx, trainy, testx, testy = split_dataset(images, keypoints)
     else:
-        images, keypoints = uncompress_splits()
+        trainx, trainy, testx, testy = uncompress_splits()
 
-    trainx, trainy, testx, testy = split_dataset(images, keypoints)
     return trainx, trainy, testx, testy
