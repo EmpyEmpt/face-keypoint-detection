@@ -1,17 +1,22 @@
 import tensorflow as tf
-from keras.models import Sequential
-from keras.layers import BatchNormalization
-from keras.layers import Conv2D
-from keras.layers import MaxPooling2D
-from keras.layers import Activation
-from keras.layers import Dense
-from keras.layers import GlobalAveragePooling2D
-from keras.layers import Reshape
+import config as cfg
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import Conv2D
+from tensorflow.keras.layers import MaxPooling2D
+from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import GlobalAveragePooling2D
 
-IMAGE_SIZE = 192
+"""Here lies everything connected to model itself
+Archirecture is as it is - fiddle around with it:
+    add more layers, change 'magical numbers', change the layers - its all here
+And lots of utulity-simplification functions for saving/loading/validating model
+
+And yeah... model has to be compiled so I don't remember why compilation and building are split..."""
 
 
-def build(image_size: int, outputs: tuple = (68, 2)):
+def build(image_size=cfg.IMAGE_SIZE, outputs=cfg.OUTPUTS):
     """Well, you yourself should not really use this - use compile_model"""
     input_shape = (image_size, image_size, 3)
 
@@ -46,12 +51,11 @@ def build(image_size: int, outputs: tuple = (68, 2)):
     model.add(GlobalAveragePooling2D())
 
     model.add(Dense(500, activation='relu'))
-    model.add(Dense(outputs[0] * outputs[1]))
-    model.add(Reshape(outputs))
+    model.add(Dense(outputs))
     return model
 
 
-def compile_model(image_size: int):
+def compile_model(image_size=cfg.IMAGE_SIZE):
     """Compiles the model with a given {input_size}"""
     model = build(image_size)
 
@@ -63,13 +67,13 @@ def compile_model(image_size: int):
     return model
 
 
-def load_model(path: str):
-    """Load the model from given {path}"""
+def load_model(path=cfg.MODEL_PATH):
+    """Load the model from provided {path}"""
     model = tf.keras.models.load_model(path)
     return model
 
 
-def load_weights(model, path: str):
+def load_weights(model, path):
     """Loads saved set of weights for already existing {model} from {path}
     There is no way to save the weight in my(stupid) framework, so why is it needed I wonder..."""
     model.load_weights(path)
@@ -78,10 +82,10 @@ def load_weights(model, path: str):
 
 def evaluate_model(model, x, y):
     """Evaluates given {model} on a given sets ({x}, {y})"""
-    _, acc = model.evaluate(x, y, verbose=2)
+    loss, acc = model.evaluate(x, y, verbose=2)
     print(f'Model accuracy: {acc*100:5.2f}%')
 
 
-def save_model(model, path: str):
+def save_model(model, path):
     """Saves {model} to a given {path}"""
     model.save(path)
