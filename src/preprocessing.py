@@ -1,3 +1,7 @@
+# prepocess image:
+#   scale image to [0...1]
+#   scale keypoints to [0...1]
+
 def normalize_images(images):
     images /= 255
     return images

@@ -8,8 +8,6 @@ from keras.layers import Dense
 from keras.layers import GlobalAveragePooling2D
 from keras.layers import Reshape
 
-import tempfile
-
 
 def build(input_shape: int, output_shape: tuple = (68, 2)):
     """Builds a model"""
@@ -51,9 +49,3 @@ def compile_model(input_shape: int, output_shape: tuple, model=None):
         metrics=['mse', 'accuracy'])
 
     return model
-
-
-def save_model(model) -> None:
-    _, keras_file = tempfile.mkstemp('.h5')
-    tf.keras.models.save_model(model, keras_file, include_optimizer=False)
-    print('Saved baseline model to:', keras_file)
