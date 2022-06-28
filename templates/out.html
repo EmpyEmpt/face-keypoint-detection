@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .column {
+            float: left;
+            width: 33.33%;
+            padding: 10px;
+            height: 300px;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row">
+        <div class="column" align="middle">
+            <p align="left">My implementation</p>
+            <img src="{{url_for('static', filename='mine.jpeg')}}" align="left" width="400" height="500" />
+        </div>
+        <div class="column" align="middle">
+            <p align="right">DLib reference</p>
+            <img src="{{url_for('static', filename='dlib.jpeg')}}" align="right" width="400" height="500" />
+        </div>
+    </div>
+</body>
+
+</html>
